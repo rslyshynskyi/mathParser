@@ -4,4 +4,5 @@ node_js:
 before_script:
 - npm install
 - npm install mocha
+- npm install should
 - npm test
