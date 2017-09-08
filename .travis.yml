@@ -3,4 +3,5 @@ node_js:
   - "stable"
 before_script:
 - npm install
+- npm install mocha
 - npm test
