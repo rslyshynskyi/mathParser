@@ -2,54 +2,48 @@ var parser = {
     parse: function (inputStr) {
         var delSpace = /\s/g;
 
-        var findErrorExp = /[-+*/]\s*[+*/]/;
         var findLeftBracket = /\(/;
         var findRightBracket = /\)/;
 
-        if(findErrorExp.test(inputStr)) {
-            return undefined;
-        }
-
         var findBracketsExpression = /\((-?\d+(?:\.\d+)?)\s*([-+*\/])\s*(-?\d+(?:\.\d+)?)\)/;
 
-        var findMulExp = /(-?\d+(?:\.\d+)?)\s*([*])\s*(-?\d+(?:\.\d+)?)/;
-        var findDivExp = /(-?\d+(?:\.\d+)?)\s*([\/])\s*(-?\d+(?:\.\d+)?)/;
-        var findAddExp = /(-?\d+(?:\.\d+)?)\s*([\+])\s*(-?\d+(?:\.\d+)?)/;
-        var findSubExp = /(-?\d+(?:\.\d+)?)\s*([-])\s*(-?\d+(?:\.\d+)?)/;
-
         var resultStr = inputStr.replace(delSpace, "");
-        var tempStr;
 
-        if(findBracketsExpression.test(resultStr)) {
-            var tempStr =  parser.calculatePart(resultStr, findBracketsExpression);
-            resultStr = resultStr.replace(findBracketsExpression, tempStr);
-        }
+        resultStr = parser.doSingleCalc(resultStr, findBracketsExpression);
 
         if (findLeftBracket.test(resultStr) || findRightBracket.test(resultStr)) {
             return undefined;
         }
 
-        while (tempStr = findMulExp.exec(resultStr)) {
-            tempStr =  parser.calculatePart(resultStr, findMulExp);
-            resultStr = resultStr.replace(findMulExp, tempStr);
-        }
+        resultStr = parser.doCalcWitoutBrackets(resultStr);
 
-        while (tempStr = findDivExp.exec(resultStr)) {
-            tempStr =  parser.calculatePart(resultStr, findDivExp);
-            resultStr = resultStr.replace(findDivExp, tempStr);
-        }
-
-        while (tempStr = findAddExp.exec(resultStr)) {
-            tempStr =  parser.calculatePart(resultStr, findAddExp);
-            resultStr = resultStr.replace(findAddExp, tempStr);
-        }
-
-        while (tempStr = findSubExp.exec(resultStr)) {
-            tempStr =  parser.calculatePart(resultStr, findSubExp);
-            resultStr = resultStr.replace(findSubExp, tempStr);
+        if( isNaN(parseFloat(resultStr)) ) {
+            return undefined;
         }
 
         return parseFloat(resultStr);
+    },
+    doCalcWitoutBrackets: function (str) {
+        var findMulExp = /(-?\d+(?:\.\d+)?)\s*([*])\s*(-?\d+(?:\.\d+)?)/;
+        var findDivExp = /(-?\d+(?:\.\d+)?)\s*([\/])\s*(-?\d+(?:\.\d+)?)/;
+        var findAddExp = /(-?\d+(?:\.\d+)?)\s*([\+])\s*(-?\d+(?:\.\d+)?)/;
+        var findSubExp = /(-?\d+(?:\.\d+)?)\s*([-])\s*(-?\d+(?:\.\d+)?)/;
+
+        str = parser.doSingleCalc(str, findMulExp);
+        str = parser.doSingleCalc(str, findDivExp);
+        str = parser.doSingleCalc(str, findAddExp);
+        str = parser.doSingleCalc(str, findSubExp);
+
+        return str
+    },
+    doSingleCalc: function (str, regExp) {
+        var expressionResult;
+        while (expressionResult = regExp.exec(str)) {
+            expressionResult =  parser.calculatePart(str, regExp);
+            str = str.replace(regExp, expressionResult);
+        }
+
+        return str;
     },
     add: function (first, second) {
         return parseFloat(first)  + parseFloat(second);

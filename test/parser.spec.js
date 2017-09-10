@@ -54,6 +54,14 @@ describe('parser for math expression', function () {
         should(parser.parse('1/2 + 5 + 4*5')).equal(25.5);
     });
 
+    it('test expression with two bracket pairs \'550/(2 + (5 + 4))*5\' res = 10', function () {
+        should(parser.parse('550/(2 + (5 + 4))*5')).equal(10);
+    });
+
+    it('test expression with two bracket pairs \'(10 - 2) + (5 + 4) * 5\' res = 53', function () {
+        should(parser.parse('(10 - 2) + (5 + 4) * 5')).equal(53);
+    });
+
     it('should return 45.5 for 1/2 + (5 + 4) * 5', function () {
         should(parser.parse('1/2 + (5 + 4) * 5')).equal(45.5);
     });
@@ -74,6 +82,10 @@ describe('parser for math expression', function () {
         should(parser.parse('1+2/3')).equal(1.67);
     });
 
+    it('should return 1 for 1+2/45/78/78', function () {
+        should(parser.parse('1+2/45/78/78')).equal(1);
+    });
+
     it('should return 0 for 0', function () {
         should(parser.parse('0')).equal(0);
     });
@@ -90,5 +102,20 @@ describe('parser for math expression', function () {
         should(parser.parse('1/2 ++ 5 + 4) * 5')).equal(undefined);
     });
 
+    it('should return undefined for [1/2] + 5 + 4*5', function () {
+        should(parser.parse('[1/2] + 5 + 4*5')).equal(undefined);
+    });
+
+    it('should return undefined for (1/2 >> 5 + 4) * 5', function () {
+        should(parser.parse('(1/2 >> 5 + 4) * 5')).equal(undefined);
+    });
+
+    it('should return undefined for (1/2 + 5a + 4b * 5', function () {
+        should(parser.parse('(1/2 + 5a + 4b * 5')).equal(undefined);
+    });
+
+    it('should return undefined for trololo', function () {
+        should(parser.parse('trololo')).equal(undefined);
+    });
 
 });
