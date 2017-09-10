@@ -1,19 +1,11 @@
 var parser = {
     parse: function (inputStr) {
-        var delSpace = /\s/g;
-
-        var findLeftBracket = /\(/;
-        var findRightBracket = /\)/;
+        var resultStr = inputStr.replace(/\s/g, "");
 
         var findBracketsExpression = /\((-?\d+(?:\.\d+)?)\s*([-+*\/])\s*(-?\d+(?:\.\d+)?)\)/;
-
-        var resultStr = inputStr.replace(delSpace, "");
-
         resultStr = parser.doSingleCalc(resultStr, findBracketsExpression);
 
-        if (findLeftBracket.test(resultStr) || findRightBracket.test(resultStr)) {
-            return undefined;
-        }
+        resultStr = parser.findSingleBracket(resultStr);
 
         resultStr = parser.doCalcWitoutBrackets(resultStr);
 
@@ -41,6 +33,16 @@ var parser = {
         while (expressionResult = regExp.exec(str)) {
             expressionResult =  parser.calculatePart(str, regExp);
             str = str.replace(regExp, expressionResult);
+        }
+
+        return str;
+    },
+    findSingleBracket: function (str) {
+        var findLeftBracket = /\(/;
+        var findRightBracket = /\)/;
+
+        if (findLeftBracket.test(str) || findRightBracket.test(str)) {
+            return undefined;
         }
 
         return str;
